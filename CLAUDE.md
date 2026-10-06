@@ -109,3 +109,16 @@ between them, so the handoff note is all they got.
   - `responders`
   - `handlers`
   - `support_tickets`
+
+- Session 1 findings (data only covers 29 Jun–6 Sep 2026, so there's no prior year to test "August is always soft"):
+  - The 4.2 slump began on release day, not gradually. 3–9 Aug, just before release, was the best week on record.
+  - Pings taken fell from 76.6% to 64.0%; misses went from 2.3% to 18.0%; turn-downs actually fell. Unanswered pings now move on after about 62 seconds, down from about 92.
+- Four responders have dropped out of rotation: Vesper, The Undertow, Farlight and Meteor Mite. They went from about 49 pings a week combined to 3, with none taken in the last two weeks.
+  - Local first-ping share in Old Town and Uptown collapsed from about 85% and 75% to 13%; in Harborside from 79% to 25%.
+  - Best guess: misses under the shorter timeout pushed them down the ranking, which caused more misses, a feedback loop. Unconfirmed, because there are no response times in the data.
+- Support tickets have two themes: "phone never goes off" (about two thirds) and "gone before I could answer" (about one third).
+  - The Kip and Aunt Dot customer interviews back both up.
+- Open questions:
+  - The engineering manager's unanswered 14 Aug question on the 4.2 wiki page: does the routing treat responders with recent turn-downs or misses differently? Ask the staff engineer.
+  - Was Availability Confidence (committed to 4.2, not in the release notes) cut? Ask the Director of Product.
+  - Does the 31 Aug partial recovery hold into September? Needs newer data.

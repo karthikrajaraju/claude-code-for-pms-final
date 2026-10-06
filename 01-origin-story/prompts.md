@@ -23,7 +23,12 @@ prompt library built from your own questions.
 ---
 
 ### 1.
+1. can you provide a history if available if there are similar issues in prior months as opposed to August (pre-release). 
+
+2. Provide details on pre-release status vs post release status. 
+3. What are the key attributes to look into to fix this issue or provide some common issues that was there in prior versions.
 
 ### 2.
+what is create PR, can you explain me briefly
 
 ### 3.
