@@ -27,3 +27,12 @@ Group these, tell me how many are in each group, and quote me one line from each
 1. can you summarize the above by grouping , provide a severity which is high vs low, also tell me the number of tickets fro each group (before 4.2/ after release) - one liner for each group. provide results in a table. i want to see which would needs more focus based on those details.
 
 2. similarly, for each people/use case (responders. dispatcher etc) - tell me whay they are unhappy and number of tickets associated and provide me same insights as the first item.
+
+### 4.
+with all the result and insights that we gained, could you provide the final problem statemnts. it can be multiple. but simialr to above provide priority, who the use case associated to, why that use case <person> is unhappy; before 4.2 and after 4.2 release ticket numbers. provide all results as 1 liner in a table as opposed to para. provide in a nice table
+
+### 5.
+Based on the interviews, the trouble with 4.2 is ___. provide in one sentence
+
+### 6.
+similar to the above, the initial three prompts that i have provided. leverage the same but specifically look at every support tickets in the databse. same approach as last time with the results

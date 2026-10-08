@@ -122,3 +122,10 @@ between them, so the handoff note is all they got.
   - The engineering manager's unanswered 14 Aug question on the 4.2 wiki page: does the routing treat responders with recent turn-downs or misses differently? Ask the staff engineer.
   - Was Availability Confidence (committed to 4.2, not in the release notes) cut? Ask the Director of Product.
   - Does the 31 Aug partial recovery hold into September? Needs newer data.
+- Session 2 findings (support tickets, the four interviews, and `00-rook/code/dispatch-routing`):
+  - The routing code explains the drop-off. `offer.py` and `history.py` score a miss the same as a turn-down (−0.12, against +0.08 for a yes), with no recovery over time (an unresolved TODO from 2019). Dispatch stops at the first yes, so a responder with a low score is rarely reached and can't recover. The 60-second wait turns slow answers into misses.
+  - The 147 tickets fall into six groups: console requests 54, gone quiet 32, equipment and supply 26, saved filters 16, gone before they could answer 13, phone notifications 6 (40 before 4.2 / 107 after). All 45 routing tickets are still open and unanswered; all were filed on or after 12 Aug.
+  - The two piles come from different people: the four interviewed handlers filed 1 ticket. Vesper, Meteor Mite and The Gale (overloaded) appear only in the interviews; Farlight and The Undertow (40 tickets between them) only in the tickets.
+  - Contradictions to check: Halloran says Supply's maintenance scheduling improved, but tickets after 4.2 say it booked servicing on the busiest day of the year. Supply reads Dispatch's availability record for scheduling. Sign-in and account tickets went from 2 to 12 after 4.2.
+  - People not yet consulted: Ravi Menon (data analyst) reports acceptance every week and may have time-to-accept. The 4.0 routing override log could rule out handlers manually passing over responders.
+  - The Handler Phone App brief (8 Sep) treats Dot's quote as a notification problem; the cause looks like routing.
