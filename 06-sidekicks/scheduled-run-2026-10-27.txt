@@ -1,0 +1,57 @@
+review-checklist — scheduled run (every Tuesday 08:00 Central)
+Started:  Tue 2026-10-27 08:00 Central (13:00 UTC; Central is on CDT until 1 Nov)
+Finished: Tue 2026-10-27 08:01 Central
+Source:   rook-wiki "Product briefs" (4) + 05-super-speed/brief.md (1) = 5 briefs
+Rules:    .claude/skills/review-checklist/SKILL.md
+          A success measure passes only if it has what / baseline / target / date.
+          A team or role alone counts as "partly" for owner.
+
+fair-way-back (05-super-speed/brief.md)
+  owner named ................... yes (Karthik, PM, Rook Dispatch)
+  success measure ............... yes (baseline, target and review date on each)
+  scope stays bounded ........... yes
+  problem stated before fix ..... yes
+  -> 0 flags. Ready.
+
+bulk-callout (wiki, 12 Jan 2026)
+  owner named ................... NO — flagged
+  success measure ............... PARTLY — flagged
+  scope stays bounded ........... yes
+  problem stated before fix ..... yes
+  -> 2 flags. No owner: ends "nobody's picked it up yet". Measures
+     ("fewer support tickets", "time-to-full-coverage should drop")
+     have no baseline, target or date; the brief says so itself.
+
+routing-override-audit-log (wiki, 5 Mar 2026)
+  owner named ................... PARTLY — flagged (a team, no person)
+  success measure ............... NO — flagged
+  scope stays bounded ........... yes ("Overrides only")
+  problem stated before fix ..... yes
+  -> 2 flags. Owner is "the engineering manager's team", not a named
+     person. No success measure at all: says what gets logged and
+     where, never how we'd know it's working.
+
+requisition-approval-chains (wiki, 14 Jul 2026)
+  owner named ................... PARTLY — flagged (a team, no person)
+  success measure ............... PARTLY — flagged
+  scope stays bounded ........... NO — flagged
+  problem stated before fix ..... yes
+  -> 3 flags. Owner is "The Rook Supply team". Measure has a target
+     (zero) but no baseline or date. Scope grows mid-document: opens
+     with one second approval ("That's the whole ask"), then adds
+     routing around slow approvers, a cross-site dashboard, handler
+     visibility and replacing Halloran's spreadsheet.
+
+handler-phone-app (wiki, 8 Sep 2026)
+  owner named ................... yes (the product designer, Sofia Marino)
+  success measure ............... PARTLY — flagged
+  scope stays bounded ........... yes (three things, rest out of scope)
+  problem stated before fix ..... PARTLY — flagged
+  -> 2 flags. Measure has no baseline, target or date ("No baseline
+     number yet"). Opens with "Proposal"; the problem (Aunt Dot hearing
+     about callouts late) only comes in the second section.
+
+Summary: 5 briefs checked · 1 ready · 4 flagged · 9 flags in total
+  Most common gap: success measures without a baseline, target or date (4 of 5).
+  Worst: requisition-approval-chains (3 flags, including scope creep).
+Next run: Tue 2026-11-03 08:00 Central (14:00 UTC; Central is on CST from 1 Nov)

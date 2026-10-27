@@ -14,6 +14,7 @@ prompt library built from your own questions.
 ---
 
 ### 1.
+now imagine it's Tuesday morning. I want this to run the review-checklist that runs every Tuesday 8AM CST as part of this project. So, can you imagine the current time as the scheduled one and provide the status
 
 ### 2.
 

@@ -1,6 +1,6 @@
 # Brief: a fair way back for responders who go quiet
 
-**For:** Helen Achebe · **From:** PM, Rook Dispatch · **Status:** proposal, before any code changes · **Source:** Rook database, 29 Jun – 6 Sep 2026
+**For:** Helen Achebe · **Owner:** Karthik, PM, Rook Dispatch (accountable for this brief end to end) · **Status:** proposal, before any code changes · **Source:** Rook database, 29 Jun – 6 Sep 2026
 **Prototype:** `prototype.html` (handler and responder screens, release-day message), shown to Desmond or Kip by **6 Nov**, before Marcus.
 **Dates:** Wen decides the fade rule by **30 Oct** · Phase 1 ships **12 Nov** · review **10 Dec**
 
@@ -27,11 +27,11 @@ A reset is faster but erases the evidence. Wen confirms by 30 Oct whether a rest
 **Phases.** *12 Nov:* items 1–4 (lighter miss, fade, handler warning, release messages). *Phase 2* (Marcus sets the date by 30 Oct): "received" and "opened" signals, no penalty if a ping wasn't delivered, extra time once opened. Supply must be told before the availability record's format changes. Proximity keeps its 4.2 weight: not a revert.
 
 ## How we'll know (10 Dec, Phase 1)
-- No available responder (not marked unavailable) goes more than 7 days without a ping.
-- The four are back to at least 75% of their pre-4.2 jobs.
+- No available responder (not marked unavailable) goes more than 7 days without a ping. Now: The Undertow went 9.
+- The four are back to at least 75% of their pre-4.2 jobs. Now: about 1 a week each, against 8–11 before.
 - Callouts where nobody came are back to 4–12 a week; after 4.2 it was 14–17.
-- No new "gone quiet" tickets per week by week 4.
-- *Phase 2 review:* missed pings under 5% (2.3% before 4.2, 18% now).
+- No new "gone quiet" tickets per week by week 4. Now: about 8–10 a week.
+- *Phase 2 review, 4 weeks after Phase 2 ships:* missed pings under 5% (2.3% before 4.2, 18% now).
 - *To watch:* The Gale's load, 21 pings a week against a usual 13.
 
 **Who:** Wen Li decides the fade rule · Marcus Oyelaran builds · Sofia Marino designs · Ravi Menon measures · Nadia Hoffmann replies · Helen Achebe decides recalculate or reset.
