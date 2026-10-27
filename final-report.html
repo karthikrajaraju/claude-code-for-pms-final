@@ -89,6 +89,7 @@ svg .ink{fill:var(--ink)}
   .grid2,.grid3,.timeline,.loop,.phase{grid-template-columns:1fr!important}.bar{grid-template-columns:110px minmax(0,1fr) 54px}
   .arrow{display:none}.hm{grid-template-columns:96px repeat(10,minmax(0,1fr));font-size:10px}
 }
+.overlay{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column}.overlay[hidden]{display:none}.ovbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line)}.overlay iframe{flex:1;width:100%;border:0}
 @media print{body{overflow:visible}.top,.nav,.progress{display:none}.stage{overflow:visible}.slide{position:static;opacity:1;transform:none;page-break-after:always}}
 </style>
 </head>
@@ -246,7 +247,7 @@ Based on what I found, the reason some responders are getting no pings at all is
   <p class="kicker">Module 5 · The prototype (prototype.html)</p>
   <h2>Click through it: the fix happening to Meteor Mite, as Kip sees it.</h2>
   <div class="grid2" style="grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)">
-    <div class="frame"><iframe src="05-super-speed/prototype.html" title="Clickable prototype" loading="lazy"></iframe></div>
+    <div class="frame"><iframe id="protoFrame" title="Clickable prototype"></iframe></div>
     <div>
       <ul class="clean" style="margin-top:0">
         <li><b>Switch</b> between Today, Phase 1 and Phase 2.</li>
@@ -254,7 +255,7 @@ Based on what I found, the reason some responders are getting no pings at all is
         <li><b>The Undertow's phone:</b> a real ping and a 6× clock. Watch it vanish mid-reach today, and survive in Phase 2.</li>
         <li><b>Release day:</b> Helen's recalculate/reset toggle.</li>
       </ul>
-      <p style="margin:12px 0"><a class="btn primary" href="05-super-speed/prototype.html" target="_blank" rel="noopener">Open full screen ↗</a></p>
+      <p style="margin:12px 0"><button class="btn primary" data-proto-full>Open full screen ⤢</button></p>
       <div class="prompt"><div class="lbl">My prompts · 05-super-speed, prompts 6 and 8</div><pre>allright, build the prototype now until you reach the confidence of 95%
 …
 can you make sure that change visible on screen: i want to make sure that person actually experiencing the fix, not a generic screen.
@@ -335,7 +336,7 @@ Show me this happening to Meteor Mite specifically, using her name, the way Kip 
   <p class="lede">The fix makes a miss cost less, lets a bad week fade, shows handlers why, and tells everyone first. The checklist makes sure the next brief names an owner, a measure, a fixed scope and the problem before anyone ships a fix.</p>
   <div class="grid3">
     <a class="card" href="05-super-speed/brief.md" style="text-decoration:none;color:inherit"><h3>brief.md ↗</h3><p class="muted" style="margin:0;font-size:14px">One page, all four checks pass</p></a>
-    <a class="card" href="05-super-speed/prototype.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><h3>prototype.html ↗</h3><p class="muted" style="margin:0;font-size:14px">Clickable, one file, works offline</p></a>
+    <a class="card" href="#" data-proto-full style="text-decoration:none;color:inherit"><h3>prototype.html ⤢</h3><p class="muted" style="margin:0;font-size:14px">Clickable, one file, works offline</p></a>
     <a class="card" href=".claude/skills/review-checklist/SKILL.md" style="text-decoration:none;color:inherit"><h3>review-checklist ↗</h3><p class="muted" style="margin:0;font-size:14px">Four checks, every Tuesday</p></a>
   </div>
 </div></section>
@@ -347,6 +348,371 @@ Show me this happening to Meteor Mite specifically, using her name, the way Kip 
     <button class="btn primary" id="next" aria-label="Next slide">Next →</button>
   </div>
 </div>
+<div class="overlay" id="protoOverlay" hidden role="dialog" aria-modal="true" aria-label="Prototype, full screen"><div class="ovbar"><b>Prototype · a fair way back</b><button class="btn" id="protoClose">Close ✕ (Esc)</button></div><iframe id="protoFrameFull" title="Clickable prototype, full screen"></iframe></div>
+<script type="text/plain" id="protoSrc"><!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fair Way Back Prototype</title>
+<style>
+:root{--bg:#f6f5f2;--card:#fff;--ink:#1d1d1b;--muted:#6b6a65;--line:#e2e0d9;--accent:#2a62c9;--accent-bg:#e8effc;--warn:#8a5a00;--warn-bg:#fff4dc;--warn-line:#f0c46a;--bad:#a32d2d;--bad-bg:#fcebeb;--good:#1f6b3a;--good-bg:#e6f4ea;--phone:#111;--radius:10px}
+@media (prefers-color-scheme:dark){:root{--bg:#161615;--card:#21211f;--ink:#f0efec;--muted:#a3a29b;--line:#383835;--accent:#7aa6f0;--accent-bg:#1d2a44;--warn:#f3c46b;--warn-bg:#3a2d10;--warn-line:#7a5a1a;--bad:#f09595;--bad-bg:#3a1a1a;--good:#8fd3a6;--good-bg:#173323;--phone:#000}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+header{padding:16px;max-width:1080px;margin:0 auto}
+h1{font-size:20px;margin:0 0 4px;font-weight:600}
+.sub{color:var(--muted);font-size:13px;margin:0}
+.bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:14px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--card)}
+.seg button{border:0;background:none;padding:7px 14px;font:inherit;font-size:13px;color:var(--ink);cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.tabs button{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:7px 12px;font:inherit;font-size:13px;cursor:pointer;color:var(--ink)}
+.tabs button[aria-selected=true]{border-color:var(--accent);background:var(--accent-bg);color:var(--accent);font-weight:600}
+main{max-width:1080px;margin:0 auto;padding:0 16px 40px}
+.note{font-size:13px;color:var(--muted);margin:10px 0 14px}
+.console{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.ctop{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
+.ctop b{color:var(--ink)}
+.cbody{padding:14px;display:grid;gap:14px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.rc{border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px}
+.rc h3{margin:0;font-size:16px}
+.rc .meta{font-size:13px;color:var(--muted)}
+.pill{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;background:var(--good-bg);color:var(--good);margin-left:6px;vertical-align:2px}
+.stat{display:flex;gap:18px;margin:10px 0;font-size:13px}
+.stat b{display:block;font-size:22px;font-weight:600}
+.spark{display:flex;align-items:flex-end;gap:3px;height:48px;margin:6px 0 2px}
+.spark span{flex:1;background:var(--accent);opacity:.75;border-radius:2px 2px 0 0;min-height:2px}
+.spark span.post{opacity:1}
+.spark span.rel{outline:2px solid var(--ink);outline-offset:1px}
+.axis{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+.flag{border:1px solid var(--warn-line);background:var(--warn-bg);color:var(--warn);border-radius:8px;padding:10px 12px;font-size:14px}
+.flag strong{display:block;margin-bottom:2px}
+.flag.busy{border-color:var(--line);background:var(--accent-bg);color:var(--accent)}
+.plain{font-size:13px;color:var(--muted);font-style:italic}
+.link{background:none;border:0;padding:0;color:var(--accent);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer}
+.drawer{border-top:1px dashed var(--line);margin-top:10px;padding-top:10px;font-size:13px}
+.drawer ul{margin:4px 0 0 18px;padding:0}
+.tk{border:1px solid var(--line);border-radius:var(--radius)}
+.tk h4{margin:0;padding:10px 14px;border-bottom:1px solid var(--line);font-size:14px}
+.tk li{list-style:none;padding:8px 14px;border-bottom:1px solid var(--line);font-size:13px;display:flex;justify-content:space-between;gap:10px}
+.tk ul{margin:0;padding:0}
+.tk li:last-child{border-bottom:0}
+.st{font-size:12px;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.st.open{background:var(--bad-bg);color:var(--bad)}
+.st.rep{background:var(--good-bg);color:var(--good)}
+.phwrap{display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start}
+.phone{width:300px;height:600px;background:var(--phone);border-radius:38px;padding:12px;box-shadow:0 0 0 2px #333 inset}
+.screen{width:100%;height:100%;border-radius:28px;background:#f2f2f6;color:#111;overflow:hidden;display:flex;flex-direction:column;position:relative}
+.sbar{display:flex;justify-content:space-between;padding:10px 18px 4px;font-size:12px;font-weight:600}
+.sc{flex:1;padding:12px 14px;display:flex;flex-direction:column;gap:10px;overflow:auto}
+.notif{background:#fff;border-radius:16px;padding:12px;box-shadow:0 1px 3px rgba(0,0,0,.12);font-size:14px;color:#111}
+.notif small{color:#666;display:block;font-size:11px;margin-bottom:2px}
+.pbtn{border:0;border-radius:12px;padding:12px;font:inherit;font-weight:600;cursor:pointer;width:100%}
+.take{background:#1f8a4c;color:#fff}.down{background:#e4e4ea;color:#111}.open{background:#2a62c9;color:#fff}
+.ring{font-size:40px;font-weight:700;text-align:center;font-variant-numeric:tabular-nums}
+.ringsub{text-align:center;font-size:12px;color:#555;margin-top:-6px}
+.out{border-radius:14px;padding:12px;font-size:14px}
+.out.bad{background:#fde8e8;color:#7a1f1f}.out.ok{background:#e3f4e8;color:#145a2e}.out.neutral{background:#fff;color:#111}
+.stand{background:#fff;border-radius:14px;padding:12px;font-size:13px;color:#111}
+.stand b{display:block;font-size:15px;margin-top:2px}
+.demo{max-width:420px;display:grid;gap:10px}
+.demo h3{margin:0;font-size:15px}
+.demo button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:9px 12px;font:inherit;font-size:14px;cursor:pointer;text-align:left}
+.demo button:disabled{opacity:.45;cursor:not-allowed}
+.why{font-size:13px;color:var(--muted)}
+.tag{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.02em;padding:2px 7px;border-radius:6px;background:var(--accent-bg);color:var(--accent);margin-right:6px}
+.banner{border:1px solid var(--accent);background:var(--accent-bg);color:var(--ink);border-radius:8px;padding:12px 14px;font-size:14px}
+.empty{border:1px dashed var(--line);border-radius:var(--radius);padding:18px;color:var(--muted);font-size:14px;text-align:center}
+.story{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);padding:14px;margin-bottom:16px}
+.story h2{font-size:16px;margin:0 0 2px}
+.steps{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.steps button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:4px 10px;font:inherit;font-size:12px;cursor:pointer}
+.steps button[aria-current=step]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.sgrid{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:14px;align-items:start}
+.mphone{width:230px;height:430px;background:var(--phone);border-radius:30px;padding:9px}
+.mphone .screen{border-radius:22px}
+.mrow{display:flex;justify-content:space-between;gap:8px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;margin-bottom:8px}
+.mrow b{font-size:14px}
+.feed{font-size:13px;border-left:3px solid var(--accent);padding:4px 10px;margin-top:8px}
+.snav{display:flex;gap:8px;margin-top:12px}
+.snav button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:7px 12px;font:inherit;font-size:13px;cursor:pointer}
+.snav button:disabled{opacity:.4;cursor:not-allowed}
+.label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:0 0 6px}
+@media (max-width:640px){.sgrid{grid-template-columns:1fr}.mphone{margin:0 auto}}
+@media (max-width:640px){.phone{width:100%;max-width:300px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>A fair way back for responders who go quiet</h1>
+  <p class="sub">Rough clickable prototype for Helen. Goes with <code>brief.md</code>. Numbers, ticket titles and quotes from the Rook database and interviews (29 Jun – 6 Sep 2026). Screens and on-screen wording are mock-ups, not the real console or app.</p>
+  <div class="bar">
+    <div class="seg" role="group" aria-label="Which version">
+      <button data-mode="today" aria-pressed="true">Today (4.2)</button>
+      <button data-mode="p1" aria-pressed="false">Phase 1 · 12 Nov</button>
+      <button data-mode="p2" aria-pressed="false">Phase 2</button>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Screens">
+      <button role="tab" data-view="desmond" aria-selected="true">Desmond · The Undertow</button>
+      <button role="tab" data-view="kip" aria-selected="false">Kip · Meteor Mite</button>
+      <button role="tab" data-view="phone" aria-selected="false">The Undertow's phone</button>
+      <button role="tab" data-view="release" aria-selected="false">Release day</button>
+    </div>
+  </div>
+</header>
+<main id="app" aria-live="polite"></main>
+
+<script>
+const S={mode:'today',view:'desmond',drawer:false,choice:'recalc',ph:{step:'idle',t:0,limit:60,opened:false,timer:null,result:null,reach:false}};
+const WEEKS=['29 Jun','6 Jul','13 Jul','20 Jul','27 Jul','3 Aug','10 Aug','17 Aug','24 Aug','31 Aug'];
+const D={
+  undertow:{name:'The Undertow',area:'Harborside',p:[12,11,12,13,12,12,11,4,1,1]},
+  mite:{name:'Meteor Mite',area:'Eastgate',p:[11,12,10,11,12,11,10,4,2,1]},
+  gale:{name:'The Gale',area:'Eastgate',p:[13,12,13,14,13,13,15,17,20,21]}
+};
+const TICKETS=[
+  ['20 Aug','Hardly anything for The Undertow this week'],
+  ['24 Aug',"The Undertow's phone has not gone off in 3 days"],
+  ['30 Aug','Is The Undertow still on the list?'],
+  ['1 Sep','The Undertow asked me to pass this on'],
+  ['5 Sep','First one in 9 days and he missed it']
+];
+const after=()=>S.mode!=='today';
+const $=s=>document.querySelector(s);
+const STAND_RECALC='Asked less than usual since August. Your standing is being recalculated under the 12 Nov change.';
+const STAND_RESET='Your standing was reset on 12 Nov, the same as everyone else\'s.';
+function standCard(){
+  if(!after())return '';
+  return `<div class="stand">Your standing<b>${S.choice==='reset'?STAND_RESET:STAND_RECALC}</b><span style="font-size:11px;color:#666">Shown in words, never as a number. Wording is a mock-up.</span></div>`;
+}
+
+function spark(p){
+  const m=Math.max(...p);
+  return `<div class="spark" role="img" aria-label="Pings per week, ${WEEKS[0]} to ${WEEKS[9]}: ${p.join(', ')}">${p.map((v,i)=>`<span class="${i>=6?'post':''} ${i==6?'rel':''}" style="height:${Math.max(4,v/m*100)}%" title="Week of ${WEEKS[i]}: ${v} pings"></span>`).join('')}</div><div class="axis"><span>${WEEKS[0]}</span><span>4.2 ships (week of 10 Aug)</span><span>${WEEKS[9]}</span></div><div class="axis"><span>Weekly pings, Rook database</span></div>`;
+}
+function card(r,usual,flag){
+  return `<div class="rc"><h3>${r.name}<span class="pill">Available</span></h3><div class="meta">${r.area}</div>
+  <div class="stat"><div><b>${r.p[9]}</b>pings this week</div>${after()?`<div><b>${usual}</b>usual per week</div>`:''}</div>
+  ${spark(r.p)}${flag||''}</div>`;
+}
+
+function viewDesmond(){
+  const flag=after()?`<div class="flag" style="margin-top:10px"><strong>The Undertow: 1 ping this week, usually 12.</strong>5 missed pings, 12–14 Aug. These count for less from 12 Nov.
+    <div style="margin-top:6px"><button class="link" data-act="drawer" aria-expanded="${S.drawer}">${S.drawer?'Hide':'What changed?'}</button></div>
+    ${S.drawer?`<div class="drawer"><ul><li>A missed ping now counts for much less than a turned-down one.</li><li>A bad week fades instead of staying forever.</li>${S.mode==='p2'?'<li>If his phone never received a ping, it doesn\'t count against him at all.</li><li>Once he opens a ping, he gets extra time to answer.</li>':'<li>Coming in Phase 2: no penalty if a ping never reached his phone, and extra time once he opens one.</li>'}<li>Standing is shown in words, never as a number.</li></ul></div>`:''}</div>`
+    :`<p class="plain" style="margin:10px 0 0">Nothing on screen explains why he's gone quiet.</p>`;
+  const tk=TICKETS.map(([d,s])=>`<li><span>${d} · ${s}</span><span class="st ${after()?'rep':'open'}">${after()?'Replied':'Open · no reply'}</span></li>`).join('');
+  return storyPanel('undertow')+`<p class="note"><span class="tag">Brief item 3</span>${after()?'Desmond sees why The Undertow has gone quiet before he has to file a ticket.':'Today Desmond sees a number drop and nothing else. He filed 11 tickets; none were answered.'}</p>
+  <div class="console"><div class="ctop"><span><b>Rook console</b> · Coverage</span><span>Signed in: Desmond Okafor · week of 31 Aug</span></div>
+  <div class="cbody">${card(D.undertow,12,flag)}
+  <div class="tk"><h4>Tickets about The Undertow (5 of 11 shown)</h4><ul>${tk}</ul></div></div></div>`;
+}
+
+function viewKip(){
+  const fm=after()?`<div class="flag" style="margin-top:10px"><strong>Meteor Mite: 1 ping this week, usually 11.</strong>4 missed pings, 13–16 Aug. These count for less from 12 Nov.</div>`:'';
+  const fg=after()?`<div class="flag busy" style="margin-top:10px"><strong>The Gale: 21 pings this week, usually 13.</strong>Busier than usual. Meteor Mite has been quiet since mid-August.</div>`:'';
+  return storyPanel('mite')+`<p class="note"><span class="tag">Brief item 3</span>${after()?'Kip sees both sides of the same problem on one screen, with the reason.':'Today Kip sees one card dead quiet and one on fire, and nothing explains why.'}</p>
+  <div class="console"><div class="ctop"><span><b>Rook console</b> · Coverage</span><span>Signed in: Kip · week of 31 Aug</span></div>
+  <div class="cbody"><div class="cards">${card(D.mite,11,fm)}${card(D.gale,13,fg)}</div>
+  ${after()?'':'<p class="plain" style="margin:0">"Mite thinks Mite\'s been forgotten. Gale\'s exhausted." (Kip, customer interview, 4 Sep)</p>'}</div></div>`;
+}
+
+function phoneBody(){
+  const ph=S.ph;
+  if(ph.step==='idle'){
+    if(!after())return `<div class="notif"><small>Rook · week of 31 Aug</small><b>Last ping: 5 Sep, missed.</b><br>The first in 9 days. Nothing tells him why.</div>`;
+    return `<div class="notif"><small>Rook</small>Waiting for a callout…</div>${standCard()}`;
+  }
+  if(ph.step==='ringing'||ph.step==='opened'){
+    const left=Math.max(0,ph.limit-ph.t);
+    return `<div class="notif"><small>Rook · callout</small><b>Callout in Harborside</b><br>Can you take it?</div>
+      <div class="ring" id="ring" aria-label="${left} seconds left">${left}s</div>
+      <div class="ringsub">${ph.reach?(S.mode==='p2'?'Extra time because he opened it. He can still answer: tap Take it.':'He\'s reaching for it…'):(ph.opened&&S.mode==='p2'?'Extra time because you opened it':'left to answer')}</div>
+      ${ph.step==='ringing'?`<button class="pbtn open" data-act="open">Open ping</button>`:''}
+      ${ph.step==='opened'?`<button class="pbtn take" data-act="take">Take it</button><button class="pbtn down" data-act="down">Turn down</button>`:''}`;
+  }
+  return resultHtml();
+}
+function resultHtml(){
+  const r=S.ph.result;const stand=standCard();
+  if(r==='take')return `<div class="out ok"><b>It's yours.</b><br>Head to Harborside.</div>${stand}`;
+  if(r==='down')return `<div class="out neutral"><b>Turned down.</b><br>Passed to the next responder.</div>${stand}`;
+  if(r==='miss'){
+    if(!after())return `<div class="out bad"><b>This callout has gone to someone else.</b></div><p style="font-size:12px;color:#666;margin:0">No reason given. Behind the scenes it counted exactly like saying no, and that never wears off.</p>`;
+    return `<div class="out neutral"><b>Missed.</b><br>This counts for much less than saying no.</div>${stand}`;
+  }
+  if(r==='nodeliver'){
+    if(S.mode==='p2')return `<div class="notif"><small>Rook · when your phone reconnects</small>We couldn't confirm a ping reached your phone, so it doesn't count against you.</div>${stand}`;
+    if(S.mode==='p1')return `<div class="notif"><small>Rook</small>Nothing arrived.</div><p style="font-size:12px;color:#666;margin:0">He never saw it. In Phase 1 it still counts as a miss, but for much less than a no. Phase 2 removes it.</p>${stand}`;
+    return `<div class="notif"><small>Rook</small>Nothing arrived.</div><p style="font-size:12px;color:#666;margin:0">He never saw it, but it counted exactly like saying no, and that never wears off.</p>`;
+  }
+  return '';
+}
+function phoneScreen(){
+  return `<div class="phone" aria-label="The Undertow's phone"><div class="screen"><div class="sbar"><span>15:17</span><span>The Undertow</span></div><div class="sc" id="sc">${phoneBody()}</div></div></div>`;
+}
+function compare(){
+  return `<div style="margin-top:18px"><h3 style="font-size:15px;margin:0 0 8px">Same missed ping, three versions</h3>
+  <div class="cards">
+   <div class="rc"><b>Today (4.2)</b><p class="why" style="margin:6px 0 0">"This callout has gone to someone else." No reason. Counts exactly like a no (−0.12) and never wears off.</p></div>
+   <div class="rc"><b>Phase 1 · 12 Nov</b><p class="why" style="margin:6px 0 0">"Missed. This counts for much less than saying no." A bad week fades.</p></div>
+   <div class="rc"><b>Phase 2</b><p class="why" style="margin:6px 0 0">Extra time once he's opened it. If the ping never reached his phone, it doesn't count at all.</p></div>
+  </div></div>`;
+}
+function viewPhone(){
+  const ph=S.ph;const busy=ph.step==='ringing'||ph.step==='opened';
+  const limitTxt=S.mode==='p2'?'60 seconds, plus extra time once opened (shown here as +30 s; the real amount is not decided yet)':'60 seconds';
+  return `<p class="note"><span class="tag">Brief items 1 & 2</span>What The Undertow sees. The clock runs 6× faster for the demo.</p>
+  <div class="phwrap">${phoneScreen()}
+  <div class="demo"><h3>Try it</h3>
+    <button data-act="ping" ${busy?'disabled':''}>1. Send him a ping (then open it and take it or turn it down)</button>
+    <button data-act="reach" ${busy?'disabled':''}>2. He opens it and reaches for the button${S.mode==='p2'?' (Phase 2: extra time, so he can still make it)':' (the clock runs out first)'}</button>
+    <button data-act="nodeliver" ${busy?'disabled':''}>3. The ping never reaches his phone</button>
+    <button data-act="reset">Start over</button>
+    <p class="why">Time to answer: ${limitTxt}. ${after()?'A miss counts for much less than a no, and a bad week fades.':'Today a miss counts exactly like a no (−0.12) and never wears off.'}</p>
+  </div></div>${compare()}`;
+}
+
+function viewRelease(){
+  if(!after())return `<p class="note"><span class="tag">Brief item 4</span>Today: there is no release-day message.</p><div class="empty">When scoring rules change today, nobody is told. Scores change silently, and responders find out by not being asked.</div>`;
+  const rec=S.choice==='recalc';
+  const effect=rec
+    ?'<b>Recalculate (recommended).</b> Marcus exports current scores by 6 Nov. Ravi replays the pings table under the new rules and checks it against August by 6 Nov. The evidence is kept, and the replay tests whether the four move back up.'
+    :'<b>Reset.</b> Everyone goes back to the neutral starting point on 12 Nov. The four recover fastest, but the before-and-after evidence is erased.';
+  return `<p class="note"><span class="tag">Brief item 4</span>Sent <b>before</b> anything changes on 12 Nov. Support also replies to each of the 45 open tickets individually.</p>
+  <div class="console" style="margin-bottom:14px"><div class="ctop"><span><b>Helen's decision</b> · recalculate or reset</span><span>Wen confirms by 30 Oct whether a restart already resets scores</span></div><div class="cbody">
+    <div class="seg" role="group" aria-label="Recalculate or reset"><button data-choice="recalc" aria-pressed="${rec}">Recalculate (recommended)</button><button data-choice="reset" aria-pressed="${!rec}">Reset</button></div>
+    <p style="margin:0;font-size:14px">${effect}</p>
+    <p class="why" style="margin:0">Dates: 30 Oct Wen decides the fade rule; Marcus sets the Phase 2 date · 6 Nov score export, replay check, prototype shown to Desmond or Kip · 12 Nov Phase 1 ships (lighter miss, fade, handler warning, release messages).</p>
+  </div></div>
+  <div class="phwrap">
+  <div class="phone" aria-label="The Undertow's phone, release message"><div class="screen"><div class="sbar"><span>09:00</span><span>The Undertow</span></div><div class="sc">
+    <div class="notif"><small>Rook · message, before 12 Nov</small>Since August you've been asked less. We're changing how missed pings count, and you may be asked more as your standing recovers.</div>
+  </div></div></div>
+  <div style="flex:1;min-width:280px;display:grid;gap:14px">
+    <div class="console"><div class="ctop"><span><b>Rook console</b></span><span>Desmond Okafor</span></div><div class="cbody">
+      <div class="banner"><b>From 12 Nov: how missed pings count is changing.</b><br>A missed ping will count for much less than a turned-down one, and bad weeks will fade. Your responders are told before the change. ${rec?'Standing will be recalculated for everyone under the new rules.':'Standing will be reset to the starting point for everyone.'}</div>
+    </div></div>
+    <div class="tk"><h4>Reply to Desmond's ticket · "Is The Undertow still on the list?"</h4><ul><li><span>Yes, he is. Since 12 Aug, pings have had less time to be answered, and a missed ping has always counted the same as a no. We think that pushed him down the order. That changes on 12 Nov. Sorry we didn't answer sooner. — Rook Support</span></li></ul></div>
+  </div></div>`;
+}
+
+
+/* ---------- personal stories ---------- */
+S.story={mite:0,undertow:0};S.next={mite:null,undertow:null};
+const P={
+ mite:{who:'Meteor Mite',she:'she',her:'her',him:'her',handler:'Kip',area:'Eastgate',usualP:11,usualJ:'about 8',target:'about 6',other:{name:'The Gale',usual:13}},
+ undertow:{who:'The Undertow',she:'he',her:'his',him:'him',handler:'Desmond',area:'Harborside',usualP:12,usualJ:'about 9',target:'about 7',other:null}
+};
+const row=(n,a,b,extra)=>`<div class="mrow"><span><b>${n}</b>${extra?`<br><span class="meta">${extra}</span>`:''}</span><span style="text-align:right">${a}<br><span class="meta">${b}</span></span></div>`;
+const mph=(time,who,body)=>`<div class="mphone" aria-label="${who}'s phone"><div class="screen"><div class="sbar"><span>${time}</span><span>${who}</span></div><div class="sc">${body}</div></div></div>`;
+const nt=(sm,txt)=>`<div class="notif"><small>${sm}</small>${txt}</div>`;
+const out=(cls,txt)=>`<div class="out ${cls}">${txt}</div>`;
+const fl=(t,b,busy)=>`<div class="flag${busy?' busy':''}" style="margin-bottom:8px"><strong>${t}</strong>${b}</div>`;
+
+function todaySteps(k){
+  if(k==='mite')return [
+   {when:'Week of 3 Aug · before 4.2',con:row('Meteor Mite','11 pings','8 taken','Available · Eastgate')+row('The Gale','13 pings','10 taken','Available · Eastgate')+'<p class="plain" style="margin:0">Nothing unusual. Both busy.</p>',
+    ph:mph('19:40','Meteor Mite',nt('Rook · callout','<b>Callout in Eastgate</b>')+out('ok','<b>Taken.</b> Head to Eastgate.')),
+    note:'A normal week: she took 8 of 11 pings.'},
+   {when:'13–16 Aug · 4.2 goes live',con:row('Meteor Mite','10 pings','4 taken','Available · Eastgate')+row('The Gale','15 pings','9 taken','Available · Eastgate')+'<p class="plain" style="margin:0">Nothing on Kip\'s screen says anything has changed.</p>',
+    ph:mph('19:12','Meteor Mite',out('bad','<b>This callout has gone to someone else.</b>')+out('bad','<b>This callout has gone to someone else.</b>')+'<p style="font-size:12px;color:#666;margin:0">4 times: 13, 13, 14 and 16 Aug. No reason given.</p>'),
+    note:'The ping wait is now 60 seconds. She misses 4 in four days. Each one counts exactly like saying no (−0.12), and it never wears off.'},
+   {when:'19 Aug · her last job',con:row('Meteor Mite','4 pings','1 taken','Week of 17 Aug')+row('The Gale','17 pings','12 taken','Week of 17 Aug'),
+    ph:mph('14:05','Meteor Mite',out('ok','<b>Taken.</b> Head to Eastgate.')+'<p style="font-size:12px;color:#666;margin:0">19 Aug. Her last job in the data.</p>'),
+    note:'Under the current rules, her low score most likely puts her behind The Gale on Eastgate callouts (our leading explanation). Fewer pings means fewer chances to earn it back.'},
+   {when:'Week of 31 Aug',con:row('Meteor Mite','1 ping','0 taken','Week of 31 Aug')+row('The Gale','21 pings','16 taken','Week of 31 Aug')+'<p class="plain" style="margin:0">"Mite thinks Mite\'s been forgotten. Gale\'s exhausted." (Kip, interview, 4 Sep)</p>',
+    ph:mph('11:20','Meteor Mite',nt('Rook','<b>Last ping: 5 Sep, missed.</b><br>Nothing tells her why.')),
+    note:'From about 8 jobs a week to none. The Gale is doing her share, and Kip can\'t see why.'}];
+  return [
+   {when:'Week of 3 Aug · before 4.2',con:row('The Undertow','12 pings','9 taken','Available · Harborside'),
+    ph:mph('18:10','The Undertow',nt('Rook · callout','<b>Callout in Harborside</b>')+out('ok','<b>Taken.</b> Head to Harborside.')),
+    note:'Harborside\'s responder: he took 92% of its callouts.'},
+   {when:'12–14 Aug · 4.2 goes live',con:row('The Undertow','11 pings','4 taken','Week of 10 Aug')+'<p class="plain" style="margin:0">Nothing on Desmond\'s screen says anything has changed.</p>',
+    ph:mph('10:22','The Undertow',out('bad','<b>This callout has gone to someone else.</b>')+out('bad','<b>This callout has gone to someone else.</b>')+'<p style="font-size:12px;color:#666;margin:0">5 times between 12 and 14 Aug. No reason given.</p>'),
+    note:'He misses 5 pings in two days. Each counts exactly like a no (−0.12) and never wears off.'},
+   {when:'17 Aug · his last job',con:row('The Undertow','4 pings','1 taken','Week of 17 Aug')+'<div class="feed">20 Aug · Desmond files "Hardly anything for The Undertow this week". No reply.</div>',
+    ph:mph('19:07','The Undertow',out('ok','<b>Taken.</b> Head to Harborside.')+'<p style="font-size:12px;color:#666;margin:0">17 Aug. His last job in the data.</p>'),
+    note:'Harborside jobs now go to Ironvale, Stormwrack and The Drift first, most likely because of his score (our leading explanation).'},
+   {when:'Week of 31 Aug',con:row('The Undertow','1 ping','0 taken','Week of 31 Aug')+'<div class="feed">11 tickets from Desmond. All open, no reply.</div>',
+    ph:mph('15:17','The Undertow',nt('Rook','<b>Last ping: 5 Sep, missed.</b><br>The first in 9 days.')+'<p style="font-size:12px;color:#666;margin:0">"starting to wonder if im still even in the system." (1 Sep)</p>'),
+    note:'From about 9 jobs a week to none, while marked available the whole time.'}];
+}
+function afterSteps(k){
+  const p=P[k], n=p.who, p2=S.mode==='p2', pick=S.next[k];
+  const bannerTxt=`<b>From 12 Nov: how missed pings count is changing.</b><br>A missed ping will count for much less than a turned-down one, and bad weeks will fade. ${n}${p.other?' and '+p.other.name:''} ${p.other?'are':'is'} told before the change.`;
+  const msg="Since August you've been asked less. We're changing how missed pings count, and you may be asked more as your standing recovers.";
+  const misses=k==='mite'?'4 missed pings, 13–16 Aug.':'5 missed pings, 12–14 Aug.';
+  const otherFlag=p.other?fl('The Gale: 21 pings this week, usually 13.','Busier than usual.',true):'';
+  let s3con=row(n,'Callout in '+p.area,'ringing now');
+  let s3ph=mph('16:02',n,nt('Rook · callout',`<b>Callout in ${p.area}</b><br>Can you take it?`)+(p2?'<p style="font-size:12px;color:#333;margin:0">She opened it, so she gets extra time.</p>'.replace('She',p.she[0].toUpperCase()+p.she.slice(1)).replace('she',p.she):'')+`<button class="pbtn take" data-story="${k}" data-pick="take">${p.she[0].toUpperCase()+p.she.slice(1)} takes it</button><button class="pbtn down" data-story="${k}" data-pick="miss">${p.she[0].toUpperCase()+p.she.slice(1)} misses it</button>`);
+  let s3note=`Click what happens next on ${p.her} phone, and watch ${p.handler}'s console.`;
+  if(pick==='take'){s3con=row(n,'Taken','Callout in '+p.area)+`<div class="feed">${n} took a callout in ${p.area}.</div>`;s3ph=mph('16:03',n,out('ok',`<b>Taken.</b> Head to ${p.area}.`)+standCard());s3note=`A yes adds to ${p.her} standing as it always has. ${p.handler} sees it straight away.`}
+  if(pick==='miss'){s3con=row(n,'Missed','Callout in '+p.area)+`<div class="feed">${n} missed a ping. It counts for much less than a no, and it fades.</div>`;s3ph=mph('16:04',n,out('neutral','<b>Missed.</b><br>This counts for much less than saying no.')+standCard());s3note=`One miss now costs far less than before. ${p.handler} can see what happened and why.${p2?'':' (In Phase 2, a ping that never reached the phone wouldn\'t count at all.)'}`}
+  return [
+   {when:'Before 12 Nov · everyone is told',con:`<div class="banner">${bannerTxt}</div>`,ph:mph('09:00',n,nt('Rook · message, before 12 Nov',msg)),
+    note:`${n} and ${p.handler} hear about it before anything changes. Nothing happens silently.`},
+   {when:`12 Nov · ${p.handler} can see why`,con:fl(`${n}: 1 ping this week, usually ${p.usualP}.`,`${misses} These count for less from 12 Nov.`)+otherFlag,ph:mph('12:00',n,nt('Rook','Waiting for a callout…')+standCard()),
+    note:`${p.handler} no longer has to guess or file a ticket. ${n} sees ${p.her} standing in words. (Figures shown are as of the week of 31 Aug.)`},
+   {when:`The next ${p.area} callout`,con:s3con,ph:s3ph,note:s3note},
+   {when:'10 Dec review · what we\'d check',con:fl(`Target for ${n}`,`Back to at least 75% of ${p.her} pre-4.2 jobs (${p.target} a week), and never more than 7 days without a ping.`)+(p.other?fl('Watch: The Gale','Load easing back toward its usual 13 pings a week.',true):''),ph:mph('09:30',n,standCard()),
+    note:'These are targets for the review, not results. The real numbers come from Ravi on 10 Dec.'}];
+}
+function storyPanel(k){
+  const p=P[k],steps=after()?afterSteps(k):todaySteps(k),i=Math.min(S.story[k],steps.length-1),st=steps[i];
+  const head=after()?`How the fix would play out for ${p.who} from 12 Nov <span class="meta">(design, not data)</span>`:`What actually happened to ${p.who} <span class="meta">(Rook database)</span>`;
+  return `<section class="story" aria-label="${p.who}, step by step"><h2>${p.who}, step by step, as ${p.handler} sees it</h2><p class="note" style="margin:0">${head}</p>
+  <div class="steps" role="group" aria-label="Steps">${steps.map((x,j)=>`<button data-story="${k}" data-step="${j}" ${j===i?'aria-current="step"':''}>${j+1}. ${x.when}</button>`).join('')}</div>
+  <div class="sgrid"><div><p class="label">${p.handler}'s console</p>${st.con}<p style="font-size:14px;margin:10px 0 0">${st.note}</p>
+  <div class="snav"><button data-story="${k}" data-step="${i-1}" ${i===0?'disabled':''}>← Back</button><button data-story="${k}" data-step="${i+1}" ${i===steps.length-1?'disabled':''}>Next →</button></div></div>
+  <div><p class="label">${p.who}'s phone</p>${st.ph}</div></div></section>`;
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-story]');if(!b)return;
+  const k=b.dataset.story;
+  if(b.dataset.pick){S.next[k]=b.dataset.pick;render();return}
+  if(b.dataset.step!==undefined){const j=+b.dataset.step;if(j<0)return;S.story[k]=j;render()}
+});
+
+function render(){
+  document.querySelectorAll('header .seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===S.mode));
+  document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.view===S.view));
+  $('#app').innerHTML={desmond:viewDesmond,kip:viewKip,phone:viewPhone,release:viewRelease}[S.view]();
+}
+function tick(){
+  const left=Math.max(0,S.ph.limit-S.ph.t);const r=document.getElementById('ring');
+  if(r){r.textContent=left+'s';r.setAttribute('aria-label',left+' seconds left')}
+}
+function stopTimer(){clearInterval(S.ph.timer);S.ph.timer=null}
+function resetPhone(){stopTimer();S.ph={step:'idle',t:0,limit:60,opened:false,timer:null,result:null,reach:false}}
+function finish(r){stopTimer();S.ph.step='done';S.ph.result=r;render()}
+function startTimer(speed){
+  stopTimer();
+  S.ph.timer=setInterval(()=>{S.ph.t+=1;if(S.ph.t>=S.ph.limit){finish('miss');return}tick()},1000/speed);
+}
+document.addEventListener('click',e=>{
+  const m=e.target.closest('[data-mode]');if(m){S.mode=m.dataset.mode;S.drawer=false;S.story={mite:0,undertow:0};S.next={mite:null,undertow:null};resetPhone();render();return}
+  const v=e.target.closest('[data-view]');if(v){S.view=v.dataset.view;resetPhone();render();return}
+  const c=e.target.closest('[data-choice]');if(c){S.choice=c.dataset.choice;render();return}
+  const a=e.target.closest('[data-act]');if(!a)return;
+  const act=a.dataset.act;
+  if(act==='drawer'){S.drawer=!S.drawer;render()}
+  if(act==='ping'){resetPhone();S.ph.step='ringing';startTimer(6);render()}
+  if(act==='open'){S.ph.step='opened';S.ph.opened=true;if(S.mode==='p2')S.ph.limit+=30;render()}
+  if(act==='take')finish('take');
+  if(act==='down')finish('down');
+  if(act==='reach'){resetPhone();S.ph.step='opened';S.ph.reach=true;S.ph.opened=true;S.ph.t=40;if(S.mode==='p2')S.ph.limit+=30;render();startTimer(6)}
+  if(act==='nodeliver'){resetPhone();finish('nodeliver')}
+  if(act==='reset'){resetPhone();render()}
+});
+render();
+<\/script>
+</body>
+</html>
+</script>
 
 <script>
 const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
@@ -360,7 +726,7 @@ function go(i){cur=Math.max(0,Math.min(slides.length-1,i));slides.forEach((s,j)=
 document.getElementById('dots').innerHTML=slides.map((s,i)=>`<button aria-label="Slide ${i+1}: ${s.getAttribute('aria-label')}"></button>`).join('');
 document.querySelectorAll('#dots button').forEach((d,i)=>d.onclick=()=>go(i));
 document.getElementById('prev').onclick=()=>go(cur-1);document.getElementById('next').onclick=()=>go(cur+1);
-addEventListener('keydown',e=>{if(e.target.closest&&e.target.closest('iframe'))return;if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();go(cur+1)}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(cur-1)}});
+addEventListener('keydown',e=>{const ov=document.getElementById('protoOverlay');if(!ov.hidden){if(e.key==='Escape')closeProto();return}if(e.target.closest&&e.target.closest('iframe'))return;if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();go(cur+1)}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(cur-1)}});
 
 const toc=[['Module 1','Slump started on release day',2],['Module 2','45 tickets, none answered',3],['Module 3','The blast map',4],['Module 4','The trap in the code',5],['Module 5','The fix + prototype',6],['Module 6','The weekly checklist',8]];
 document.getElementById('toc').innerHTML=toc.map(([a,b,i])=>`<button class="tl" data-go="${i}"><b>${a}</b><span>${b}</span></button>`).join('');
@@ -407,6 +773,13 @@ document.getElementById('ladder').innerHTML=s;})();
 const m={ok:'✓',pt:'!',no:'✗'};
 document.getElementById('runrows').innerHTML=r.map(([n,...c])=>`<tr><td>${n}</td>${c.map(k=>`<td><span class="${k}" title="${k==='ok'?'Pass':k==='pt'?'Partly':'Missing'}">${m[k]}</span></td>`).join('')}</tr>`).join('');})();
 
+/* prototype, embedded so it works wherever the deck is opened */
+const PROTO=document.getElementById('protoSrc').textContent.replace(/<\\\/script/g,'</'+'script');
+document.getElementById('protoFrame').srcdoc=PROTO;
+function openProto(e){if(e)e.preventDefault();const ov=document.getElementById('protoOverlay');const fr=document.getElementById('protoFrameFull');fr.srcdoc=PROTO;ov.hidden=false;document.getElementById('protoClose').focus()}
+function closeProto(){const ov=document.getElementById('protoOverlay');ov.hidden=true;document.getElementById('protoFrameFull').srcdoc='';const b=document.querySelector('.slide.on [data-proto-full]');if(b)b.focus()}
+document.querySelectorAll('[data-proto-full]').forEach(b=>b.addEventListener('click',openProto));
+document.getElementById('protoClose').addEventListener('click',closeProto);
 go(Math.max(0,(parseInt(location.hash.slice(1))||1)-1));
 </script>
 </body>
