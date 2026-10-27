@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Release 4.2 Final Report</title>
+<style>
+:root{
+  --bg:#f4f2ec;--card:#ffffff;--ink:#1b1b19;--muted:#6a6862;--line:#e3e0d7;
+  --accent:#2a62c9;--accent-soft:#e6eefb;--red:#c23b3a;--red-soft:#fbe9e8;--amber:#b7791f;--amber-soft:#fdf2dc;
+  --green:#1f7a45;--green-soft:#e3f3e9;--blue2:#185fa5;--neutral:#ecebe6;--shadow:0 1px 2px rgba(0,0,0,.04)
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#141413;--card:#1e1e1c;--ink:#f0efec;--muted:#a8a69e;--line:#34332f;
+  --accent:#7aa6f0;--accent-soft:#1c2a44;--red:#f08a88;--red-soft:#3a1c1c;--amber:#f0c06a;--amber-soft:#3a2e12;
+  --green:#86d3a2;--green-soft:#163222;--blue2:#7aa6f0;--neutral:#2c2c29}}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+.deck{height:100%;display:flex;flex-direction:column}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 20px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
+.top b{color:var(--ink)}
+.progress{height:3px;background:var(--line)}
+.progress span{display:block;height:100%;background:var(--accent);transition:width .3s}
+.stage{flex:1;position:relative;overflow:hidden}
+.slide{position:absolute;inset:0;padding:28px 40px 24px;overflow:auto;opacity:0;transform:translateX(24px);pointer-events:none;transition:opacity .35s,transform .35s}
+.slide.on{opacity:1;transform:none;pointer-events:auto}
+.wrap{max-width:1060px;margin:0 auto}
+.kicker{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:0 0 6px}
+h1{font-size:44px;line-height:1.1;margin:0 0 14px;letter-spacing:-.02em}
+h2{font-size:30px;line-height:1.15;margin:0 0 12px;letter-spacing:-.01em}
+h3{font-size:17px;margin:0 0 6px}
+.lede{font-size:19px;color:var(--muted);max-width:820px;margin:0 0 18px}
+.grid2{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:22px;align-items:start}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow)}
+.stat{font-size:48px;font-weight:700;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat small{font-size:15px;font-weight:500;color:var(--muted);letter-spacing:0}
+.red{color:var(--red)}.green{color:var(--green)}.blue{color:var(--accent)}.amber{color:var(--amber)}
+.muted{color:var(--muted)}
+.prompt{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--card);border-radius:0 12px 12px 0;padding:12px 16px;margin-top:14px}
+.prompt .lbl{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+.prompt pre{margin:0;white-space:pre-wrap;font:13.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--ink)}
+.chip{display:inline-block;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--neutral);color:var(--ink);margin:0 6px 6px 0}
+.chip.r{background:var(--red-soft);color:var(--red)}.chip.g{background:var(--green-soft);color:var(--green)}.chip.b{background:var(--accent-soft);color:var(--accent)}.chip.a{background:var(--amber-soft);color:var(--amber)}
+ul.clean{margin:8px 0 0;padding-left:18px}ul.clean li{margin:4px 0}
+.timeline{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-top:22px}
+.tl{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;text-align:left;font:inherit;color:inherit}
+.tl:hover{border-color:var(--accent)}
+.tl b{display:block;font-size:12px;color:var(--accent);letter-spacing:.05em;text-transform:uppercase}
+.tl span{font-size:14px}
+svg text{fill:var(--muted);font-size:11px}
+svg .ink{fill:var(--ink)}
+.bars{display:grid;gap:8px}
+.bar{display:grid;grid-template-columns:170px minmax(0,1fr) 70px;gap:10px;align-items:center;font-size:14px}
+.track{display:flex;height:22px;border-radius:6px;overflow:hidden;background:var(--neutral)}
+.track i{display:block;height:100%}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-bottom:8px}
+.legend span{display:flex;align-items:center;gap:6px}.legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.hm{display:grid;grid-template-columns:132px repeat(10,minmax(0,1fr));gap:2px;font-size:11.5px}
+.hm .n{display:flex;align-items:center;padding-right:6px;white-space:nowrap;overflow:hidden;font-size:12px}
+.hm .c{height:20px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+.hm .h{text-align:center;color:var(--muted);font-size:10.5px}
+.hm .g{grid-column:1/-1;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding-top:6px}
+.loop{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:stretch}
+.loop .card{position:relative;text-align:center}
+.loop .card .stat{font-size:30px}
+.arrow{position:absolute;right:-12px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--muted);z-index:2}
+.frame{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card);height:min(62vh,600px)}
+.frame iframe{width:100%;height:100%;border:0;background:var(--bg)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 14px;font:inherit;font-size:14px;cursor:pointer;text-decoration:none}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.mx{width:100%;border-collapse:separate;border-spacing:0 6px;font-size:14px}
+.mx th{text-align:left;font-size:12px;color:var(--muted);font-weight:600;padding:0 8px}
+.mx td{background:var(--card);padding:9px 8px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.mx td:first-child{border-left:1px solid var(--line);border-radius:10px 0 0 10px;font-weight:600}
+.mx td:last-child{border-right:1px solid var(--line);border-radius:0 10px 10px 0}
+.ok,.pt,.no{display:inline-block;width:26px;height:26px;border-radius:50%;text-align:center;line-height:26px;font-weight:700;font-size:13px}
+.ok{background:var(--green-soft);color:var(--green)}.pt{background:var(--amber-soft);color:var(--amber)}.no{background:var(--red-soft);color:var(--red)}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 20px;border-top:1px solid var(--line)}
+.dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.dots button{width:9px;height:9px;border-radius:50%;border:0;background:var(--line);cursor:pointer;padding:0}
+.dots button[aria-current=true]{background:var(--accent);width:22px;border-radius:5px}
+.quote{font-size:22px;line-height:1.4;font-style:italic;max-width:900px}
+.phase{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px}
+.phase .card{border-top:4px solid var(--accent)}
+@media (max-width:820px){
+  body{overflow:auto}.slide{padding:18px 16px}h1{font-size:32px}h2{font-size:24px}
+  .grid2,.grid3,.timeline,.loop,.phase{grid-template-columns:1fr!important}.bar{grid-template-columns:110px minmax(0,1fr) 54px}
+  .arrow{display:none}.hm{grid-template-columns:96px repeat(10,minmax(0,1fr));font-size:10px}
+}
+@media print{body{overflow:visible}.top,.nav,.progress{display:none}.stage{overflow:visible}.slide{position:static;opacity:1;transform:none;page-break-after:always}}
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="top"><span><b>Release 4.2: final report</b> · Rook Dispatch</span><span id="count">1 / 12</span></div>
+  <div class="progress"><span id="prog"></span></div>
+  <div class="stage" id="stage">
+
+<!-- 1 -->
+<section class="slide" aria-label="Title"><div class="wrap">
+  <p class="kicker">Product School · Claude Code for PMs · cohort ccpm-2026.1</p>
+  <h1>Release 4.2 didn't fail because of August.<br><span class="red">It pushed four willing people out of their work.</span></h1>
+  <p class="lede">Six sessions, one investigation. What happened, the evidence and the prompts that found it, the fix I'd ship, and the habit that stops it happening again.</p>
+  <div class="grid3">
+    <div class="card"><div class="stat red">37 → 0</div><p class="muted" style="margin:6px 0 0">jobs a week taken by four responders, before 4.2 vs three weeks after</p></div>
+    <div class="card"><div class="stat amber">2.3% → 18%</div><p class="muted" style="margin:6px 0 0">pings missed, before vs after release</p></div>
+    <div class="card"><div class="stat">45 <small>tickets</small></div><p class="muted" style="margin:6px 0 0">about responders going quiet or losing pings. All still unanswered.</p></div>
+  </div>
+  <div class="timeline" id="toc"></div>
+  <p class="muted" style="font-size:13px;margin-top:14px">Karthik, PM, Rook Dispatch · Use ← → or the buttons below · Rook Industries is a fictional course scenario.</p>
+</div></section>
+
+<!-- 2 -->
+<section class="slide" aria-label="What happened"><div class="wrap">
+  <p class="kicker">What happened, plainly</p>
+  <h2>A shorter clock met an old rule nobody had looked at.</h2>
+  <div class="loop" style="margin-bottom:18px">
+        <div class="card"><div class="arrow">→</div><div class="stat blue">90→60s</div><p style="margin:6px 0 0;font-size:14px">4.2 cut the time to answer a ping</p></div>
+        <div class="card"><div class="arrow">→</div><div class="stat amber">miss = no</div><p style="margin:6px 0 0;font-size:14px">A missed ping costs the same as a no (−0.12)</p></div>
+        <div class="card"><div class="arrow">→</div><div class="stat red">no way back</div><p style="margin:6px 0 0;font-size:14px">Scores never recover; only a yes (+0.08) helps</p></div>
+        <div class="card"><div class="stat red">pushed out</div><p style="margin:6px 0 0;font-size:14px">Low scores are rarely asked, so they can't earn it back</p></div>
+      </div>
+  <div class="grid2">
+    <div>
+      <ul class="clean" style="margin-top:0">
+        <li><b>Not seasonal.</b> The week before release (3–9 Aug) was the best on record. The drop started on release day.</li>
+        <li><b>Not refusals.</b> Turn-downs fell. Misses rose for everyone.</li>
+        <li><b>Four responders were pushed out</b> (Farlight, The Undertow, Meteor Mite, Vesper), and six others took their work.</li>
+        <li><b>Nobody noticed in time.</b> Handlers filed 45 tickets about it. None were answered.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Pings taken vs missed, week by week</h3>
+      <div class="legend"><span><i style="background:var(--accent)"></i>% taken</span><span><i style="background:var(--red)"></i>% missed</span></div>
+      <svg id="chartA" viewBox="0 0 460 260" width="100%" role="img" aria-label="Weekly pings taken fell from about 77 percent to 54 percent in release week, while missed pings rose from about 2 percent to 21 percent."></svg>
+      <p class="muted" style="font-size:12px;margin:6px 0 0">Rook database, pings table, 29 Jun – 6 Sep 2026. Dashed line: 4.2 ships (12 Aug).</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- 3: M1 -->
+<section class="slide" aria-label="Module 1"><div class="wrap">
+  <p class="kicker">Module 1 · Origin story</p>
+  <h2>The slump started on release day, not in "a soft August".</h2>
+  <div class="grid2">
+    <div>
+      <div class="grid3" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+        <div class="card"><p class="muted" style="margin:0 0 4px;font-size:13px">Pings taken</p><div class="stat">76.6% <small>→</small> <span class="red">64.0%</span></div></div>
+        <div class="card"><p class="muted" style="margin:0 0 4px;font-size:13px">Pings missed</p><div class="stat">2.3% <small>→</small> <span class="red">18.0%</span></div></div>
+        <div class="card"><p class="muted" style="margin:0 0 4px;font-size:13px">Turn-downs</p><div class="stat">21.1% <small>→</small> <span class="green">18.0%</span></div></div>
+        <div class="card"><p class="muted" style="margin:0 0 4px;font-size:13px">Best week on record</p><div class="stat" style="font-size:30px">3–9 Aug</div><p class="muted" style="margin:4px 0 0;font-size:13px">the week before release</p></div>
+      </div>
+      <p style="margin-top:14px">Priya's handoff said it was "mostly seasonal". The data contradicts that, and it's the claim the team was relying on.</p>
+    </div>
+    <div>
+      <div class="prompt"><div class="lbl">My prompt · 01-origin-story, prompt 1</div><pre>1. can you provide a history if available if there are similar issues in prior months as opposed to August (pre-release).
+
+2. Provide details on pre-release status vs post release status.
+3. What are the key attributes to look into to fix this issue or provide some common issues that was there in prior versions.</pre></div>
+      <p class="muted" style="font-size:13px">Source: Rook database (pings, callouts), CLAUDE.md Session 1 findings.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- 4: M2 -->
+<section class="slide" aria-label="Module 2"><div class="wrap">
+  <p class="kicker">Module 2 · Super hearing</p>
+  <h2>147 tickets. The two that mattered most appeared on release day, and nobody answered them.</h2>
+  <div class="grid2">
+    <div class="card">
+      <div class="legend"><span><i style="background:var(--muted)"></i>Before 4.2</span><span><i style="background:var(--red)"></i>After 4.2</span></div>
+      <div class="bars" id="tix"></div>
+      <p class="muted" style="font-size:12px;margin:10px 0 0">Rook support_tickets, 29 Jun – 7 Sep 2026.</p>
+    </div>
+    <div>
+      <div class="card"><div class="stat red">45 of 45</div><p style="margin:6px 0 0">routing tickets ("gone quiet", "gone before I could answer") still <b>open and unanswered</b>. Every one was filed on or after 12 Aug.</p></div>
+      <div class="card" style="margin-top:12px"><p class="quote" style="font-size:17px;margin:0">"starting to wonder if im still even in the system."</p><p class="muted" style="margin:6px 0 0;font-size:13px">The Undertow, passed on by his handler, 1 Sep</p></div>
+      <div class="prompt"><div class="lbl">My prompt · 02-super-hearing, prompt 6</div><pre>similar to the above, the initial three prompts that i have provided. leverage the same but specifically look at every support tickets in the databse. same approach as last time with the results</pre></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 5: M3 -->
+<section class="slide" aria-label="Module 3"><div class="wrap">
+  <p class="kicker">Module 3 · Rewind</p>
+  <h2>The blast map: four people cut off, six people carrying their work.</h2>
+  <div class="grid2" style="grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)">
+    <div class="card">
+      <div class="legend"><span><i style="background:#A32D2D"></i>down 75%+</span><span><i style="background:#F09595"></i>down 15–75%</span><span><i style="background:var(--neutral)"></i>steady</span><span><i style="background:#85B7EB"></i>up 15–40%</span><span><i style="background:#185FA5"></i>up 40%+</span></div>
+      <div class="hm" id="hm"></div>
+      <p class="muted" style="font-size:12px;margin:8px 0 0">Jobs taken per week vs each responder's own pre-4.2 average. Outlined column: release week.</p>
+    </div>
+    <div>
+      <div class="card"><p class="quote" style="font-size:17px;margin:0">"After the August update, four responders who were available and willing had their work cut almost to nothing within a week, six others ended up doing their share and getting worn out, and everyone in between found the jobs slipping away before they could answer."</p></div>
+      <div class="prompt"><div class="lbl">My prompt · 03-rewind, prompt 6</div><pre>we did the above analysis for just one responder, can we do the same for all other responders and do the same analysis. provide results same as above with an additional blast map analysis to visualize and finally provide one sentence out loud in plan english with the analysis.</pre></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 6: M4 -->
+<section class="slide" aria-label="Module 4"><div class="wrap">
+  <p class="kicker">Module 4 · X-ray vision</p>
+  <h2>In the code: a miss is a no, a no is forever, and a yes barely helps.</h2>
+  <div class="grid2">
+    <div>
+      <div class="card">
+        <h3>The score, as the code keeps it</h3><p class="muted" style="margin:0 0 4px;font-size:12px">Illustration of the rule, not a real score log (Rook doesn't keep score history).</p>
+        <svg id="ladder" viewBox="0 0 460 170" width="100%" role="img" aria-label="Score drops 0.12 for every miss or no, rises only 0.08 for a yes, and never recovers on its own."></svg>
+        <ul class="clean" style="font-size:14px">
+          <li><code>offer.py</code>: anything that isn't a yes, including running out of time, takes points off.</li>
+          <li><code>history.py</code>: −0.12 for a no or a miss, +0.08 for a yes. A 2019 note asks whether scores should recover. Nobody decided.</li>
+          <li>From the bottom it takes <b>about 10–12 yeses in a row</b>, at about one ping a week: <b class="red">roughly 3 months with no misses</b>.</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="card"><h3>Hypothesis 1 (most likely)</h3><p style="margin:0">Based on what I found, the reason some responders are getting no pings at all is <b>that a few missed pings in the first days after the release pushed their score to the bottom, and the system gives them no way back up</b>, because <b>the shorter 60-second clock turned slow answers into misses, each miss is penalised like a no and never wears off, and the system stops at the first yes.</b></p></div>
+      <div class="prompt"><div class="lbl">My prompt · 04-x-ray-vision, prompt 2</div><pre>now can you tell me a hypothesis based on the analysis. may be top 2 i would say. provide in below format
+
+Based on what I found, the reason some responders are getting no pings at all is (___), because (___).</pre></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 7: Fix -->
+<section class="slide" aria-label="The fix"><div class="wrap">
+  <p class="kicker">Module 5 · The fix (brief.md)</p>
+  <h2>A fair way back, which people can see. Not a number quietly changed.</h2>
+  <p class="lede" style="font-size:17px">Helen asked for the fix "from the point of view of the person it happens to". The one-page brief, approved by three model-Helens (Opus, Sonnet, Haiku), ships in two phases.</p>
+  <div class="phase">
+    <div class="card"><span class="chip b">Phase 1 · 12 Nov</span><h3>A miss counts for much less than a no</h3><p class="muted" style="margin:0;font-size:14px">"Missed. This counts for much less than saying no."</p></div>
+    <div class="card"><span class="chip b">Phase 1 · 12 Nov</span><h3>A bad week fades</h3><p class="muted" style="margin:0;font-size:14px">Answers Wen's 2019 note. Wen decides the fade rate by 30 Oct.</p></div>
+    <div class="card"><span class="chip b">Phase 1 · 12 Nov</span><h3>Handlers see it first</h3><p class="muted" style="margin:0;font-size:14px">"The Undertow: 1 ping this week, usually 12. 5 missed pings, 12–14 Aug."</p></div>
+    <div class="card"><span class="chip b">Phase 1 · 12 Nov</span><h3>Release day is visible</h3><p class="muted" style="margin:0;font-size:14px">Everyone is told first. Recalculate (recommended) or reset: Helen decides.</p></div>
+  </div>
+  <div class="grid2" style="margin-top:14px">
+    <div class="card"><span class="chip a">Phase 2 · date set by Marcus</span><p style="margin:4px 0 0;font-size:14px">"Received" and "opened" signals: no penalty if the ping never arrived, and extra time once it's opened.</p></div>
+    <div class="card"><span class="chip g">Review · 10 Dec</span><p style="margin:4px 0 0;font-size:14px">Nobody goes 7+ days without a ping (The Undertow went 9) · the four back to at least 75% of their pre-4.2 jobs · callouts where nobody came back to 4–12 a week.</p></div>
+  </div>
+</div></section>
+
+<!-- 8: Prototype -->
+<section class="slide" aria-label="Prototype"><div class="wrap">
+  <p class="kicker">Module 5 · The prototype (prototype.html)</p>
+  <h2>Click through it: the fix happening to Meteor Mite, as Kip sees it.</h2>
+  <div class="grid2" style="grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)">
+    <div class="frame"><iframe src="05-super-speed/prototype.html" title="Clickable prototype" loading="lazy"></iframe></div>
+    <div>
+      <ul class="clean" style="margin-top:0">
+        <li><b>Switch</b> between Today, Phase 1 and Phase 2.</li>
+        <li><b>Kip · Meteor Mite:</b> four steps, Kip's console beside her phone. Choose whether she takes or misses her next Eastgate callout.</li>
+        <li><b>The Undertow's phone:</b> a real ping and a 6× clock. Watch it vanish mid-reach today, and survive in Phase 2.</li>
+        <li><b>Release day:</b> Helen's recalculate/reset toggle.</li>
+      </ul>
+      <p style="margin:12px 0"><a class="btn primary" href="05-super-speed/prototype.html" target="_blank" rel="noopener">Open full screen ↗</a></p>
+      <div class="prompt"><div class="lbl">My prompts · 05-super-speed, prompts 6 and 8</div><pre>allright, build the prototype now until you reach the confidence of 95%
+…
+can you make sure that change visible on screen: i want to make sure that person actually experiencing the fix, not a generic screen.
+example -
+Show me this happening to Meteor Mite specifically, using her name, the way Kip would see it.</pre></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 9: Skill -->
+<section class="slide" aria-label="Skill"><div class="wrap">
+  <p class="kicker">Module 6 · Sidekicks · review-checklist</p>
+  <h2>The habit that stops the next 4.2: four checks on every brief, every Tuesday.</h2>
+  <div class="grid2">
+    <div>
+      <table class="mx">
+        <thead><tr><th>The check</th><th>What went wrong in 4.2</th></tr></thead>
+        <tbody>
+          <tr><td>Names who owns it</td><td>The 4.2 roadmap items were all owned by Priya, who left on 21 Aug. Marcus's 14 Aug question about the miss rule had no owner to answer it.</td></tr>
+          <tr><td>Says how we'll know it worked</td><td>"Tune how long a ping waits" had no measure. Nobody watched misses or time-to-accept, so "it's seasonal" went unchallenged.</td></tr>
+          <tr><td>Same scope start to finish</td><td>One release bundled the clock, the weights and saved filters, so nobody could tell which change caused what.</td></tr>
+          <tr><td>Problem before the fix</td><td>The roadmap items were one-line fixes with no problem stated. Nobody wrote down who the clock change would hurt.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <div class="card">
+        <h3>Tuesday 27 Oct, 08:00 Central (simulated run)</h3>
+        <table class="mx" style="font-size:13px">
+          <thead><tr><th>Brief</th><th>Owner</th><th>Measure</th><th>Scope</th><th>Problem</th></tr></thead>
+          <tbody id="runrows"></tbody>
+        </table>
+        <p style="margin:6px 0 0"><span class="chip g">1 ready</span><span class="chip r">4 flagged</span><span class="chip a">9 flags</span></p>
+      </div>
+      <div class="prompt"><div class="lbl">My prompt · 06-sidekicks, prompt 1</div><pre>now imagine it's Tuesday morning. I want this to run the review-checklist that runs every Tuesday 8AM CST as part of this project. So, can you imagine the current time as the scheduled one and provide the status</pre></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 10: People -->
+<section class="slide" aria-label="The people"><div class="wrap">
+  <p class="kicker">Why it matters</p>
+  <h2>Behind the percentages are people.</h2>
+  <div class="grid3">
+    <div class="card"><span class="chip r">Pushed out</span><h3>The Undertow · Harborside</h3><div class="stat red" style="font-size:34px">9 → 0</div><p class="muted" style="margin:6px 0 0;font-size:14px">jobs a week. Last job 17 Aug. Desmond filed 11 tickets; none answered.</p></div>
+    <div class="card"><span class="chip r">Pushed out</span><h3>Meteor Mite · Eastgate</h3><div class="stat red" style="font-size:34px">8 → 0</div><p class="muted" style="margin:6px 0 0;font-size:14px">jobs a week. "Mite thinks Mite's been forgotten." (Kip)</p></div>
+    <div class="card"><span class="chip b">Carrying the load</span><h3>The Gale · Eastgate</h3><div class="stat blue" style="font-size:34px">13 → 21</div><p class="muted" style="margin:6px 0 0;font-size:14px">pings a week. "Gale's exhausted." Nobody files a ticket about too much work.</p></div>
+  </div>
+  <div class="card" style="margin-top:14px"><p class="quote" style="margin:0">"For six weeks The Undertow answered nearly every call for help in his part of the city, then we gave him less time to pick up, counted every call he couldn't reach in time as a no, and within three weeks he'd stopped being asked at all."</p><p class="muted" style="margin:8px 0 0;font-size:13px">Module 3, said out loud, no product words</p></div>
+</div></section>
+
+<!-- 11: Honest -->
+<section class="slide" aria-label="What we still don't know"><div class="wrap">
+  <p class="kicker">Still unproven</p>
+  <h2>What I'd want before 12 Nov.</h2>
+  <div class="grid2">
+    <div class="card"><h3>Open questions</h3><ul class="clean">
+      <li><b>Why these four</b> missed more in release week: slow hands or failed delivery? Needs phone delivery receipts.</li>
+      <li><b>Time-to-accept</b> data: Ravi Menon may have it.</li>
+      <li><b>Workload cap,</b> so the next Gale isn't overloaded.</li>
+      <li><b>Meteor Mite's pronoun:</b> confirm with Kip before 6 Nov.</li>
+    </ul></div>
+    <div class="card"><h3>Dates</h3>
+      <div class="bars" style="margin-top:8px">
+        <div class="bar"><b>30 Oct</b><span>Wen: fade rule, and whether a restart resets scores · Marcus: Phase 2 date</span><span></span></div>
+        <div class="bar"><b>6 Nov</b><span>Scores exported · replay checked · prototype shown to Desmond or Kip</span><span></span></div>
+        <div class="bar"><b>12 Nov</b><span>Phase 1 ships, with everyone told first</span><span></span></div>
+        <div class="bar"><b>10 Dec</b><span>Phase 1 review against the targets</span><span></span></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 12: Close -->
+<section class="slide" aria-label="Summary"><div class="wrap">
+  <p class="kicker">In one breath</p>
+  <h1 style="font-size:36px">4.2 gave people less time to answer and kept an old rule that treats a missed ping like a no forever. Four willing responders were pushed out within a week.</h1>
+  <p class="lede">The fix makes a miss cost less, lets a bad week fade, shows handlers why, and tells everyone first. The checklist makes sure the next brief names an owner, a measure, a fixed scope and the problem before anyone ships a fix.</p>
+  <div class="grid3">
+    <a class="card" href="05-super-speed/brief.md" style="text-decoration:none;color:inherit"><h3>brief.md ↗</h3><p class="muted" style="margin:0;font-size:14px">One page, all four checks pass</p></a>
+    <a class="card" href="05-super-speed/prototype.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><h3>prototype.html ↗</h3><p class="muted" style="margin:0;font-size:14px">Clickable, one file, works offline</p></a>
+    <a class="card" href=".claude/skills/review-checklist/SKILL.md" style="text-decoration:none;color:inherit"><h3>review-checklist ↗</h3><p class="muted" style="margin:0;font-size:14px">Four checks, every Tuesday</p></a>
+  </div>
+</div></section>
+
+  </div>
+  <div class="nav">
+    <button class="btn" id="prev" aria-label="Previous slide">← Back</button>
+    <div class="dots" id="dots" aria-label="Slides"></div>
+    <button class="btn primary" id="next" aria-label="Next slide">Next →</button>
+  </div>
+</div>
+
+<script>
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const slides=[...document.querySelectorAll('.slide')];let cur=0;
+function go(i){cur=Math.max(0,Math.min(slides.length-1,i));slides.forEach((s,j)=>s.classList.toggle('on',j===cur));
+  document.getElementById('count').textContent=`${cur+1} / ${slides.length}`;
+  document.getElementById('prog').style.width=`${(cur+1)/slides.length*100}%`;
+  document.querySelectorAll('#dots button').forEach((d,j)=>d.setAttribute('aria-current',j===cur));
+  document.getElementById('prev').disabled=cur===0;document.getElementById('next').disabled=cur===slides.length-1;
+  history.replaceState(null,'','#'+(cur+1));}
+document.getElementById('dots').innerHTML=slides.map((s,i)=>`<button aria-label="Slide ${i+1}: ${s.getAttribute('aria-label')}"></button>`).join('');
+document.querySelectorAll('#dots button').forEach((d,i)=>d.onclick=()=>go(i));
+document.getElementById('prev').onclick=()=>go(cur-1);document.getElementById('next').onclick=()=>go(cur+1);
+addEventListener('keydown',e=>{if(e.target.closest&&e.target.closest('iframe'))return;if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();go(cur+1)}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(cur-1)}});
+
+const toc=[['Module 1','Slump started on release day',2],['Module 2','45 tickets, none answered',3],['Module 3','The blast map',4],['Module 4','The trap in the code',5],['Module 5','The fix + prototype',6],['Module 6','The weekly checklist',8]];
+document.getElementById('toc').innerHTML=toc.map(([a,b,i])=>`<button class="tl" data-go="${i}"><b>${a}</b><span>${b}</span></button>`).join('');
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(+b.dataset.go));
+
+/* chart A */
+(function(){const t=[76.7,77.1,76.4,75.0,77.6,77.9,54.2,65.8,66.7,72.7],m=[1.7,2.4,3.4,2.8,2.4,1.2,21.5,17.7,14.8,12.7];
+const W=['29 Jun','6 Jul','13 Jul','20 Jul','27 Jul','3 Aug','10 Aug','17 Aug','24 Aug','31 Aug'];
+const L=40,R=450,T=14,B=220,x=i=>L+i*(R-L)/9,y=v=>B-(v/100)*(B-T);
+let s='';[0,25,50,75,100].forEach(v=>{s+=`<line x1="${L}" x2="${R}" y1="${y(v)}" y2="${y(v)}" stroke="${css('--line')}"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end">${v}%</text>`});
+const rx=x(6)-((x(6)-x(5))*0.3);s+=`<line x1="${rx}" x2="${rx}" y1="${T}" y2="${B}" stroke="${css('--ink')}" stroke-dasharray="4 4"/><text x="${rx+4}" y="${T+10}" class="ink">4.2 ships</text>`;
+const path=(a,c)=>`<polyline fill="none" stroke="${c}" stroke-width="2.5" stroke-linejoin="round" points="${a.map((v,i)=>x(i)+','+y(v)).join(' ')}"/>`+a.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="3.5" fill="${c}" stroke="${css('--card')}" stroke-width="1.5"><title>Week of ${W[i]}: ${v}%</title></circle>`).join('');
+s+=path(t,css('--accent'))+path(m,css('--red'));
+W.forEach((w,i)=>{if(i%3===0||i===9)s+=`<text x="${x(i)}" y="${B+18}" text-anchor="middle">${w}</text>`});
+s+=`<text x="${x(6)+6}" y="${y(54.2)+14}" class="ink">54%</text><text x="${x(6)+6}" y="${y(21.5)-6}" class="ink">21%</text>`;
+document.getElementById('chartA').innerHTML=s;})();
+
+/* tickets */
+(function(){const g=[['Console requests',22,32],['Gone quiet',0,32],['Equipment & supply',10,16],['Saved filters',2,14],['Gone too fast',0,13],['Phone notifications',6,0]];
+document.getElementById('tix').innerHTML=g.map(([n,b,a])=>`<div class="bar"><span>${n}</span><div class="track" title="${n}: ${b} before, ${a} after"><i style="width:${b/54*100}%;background:${css('--muted')}"></i><i style="width:${a/54*100}%;background:${(n==='Gone quiet'||n==='Gone too fast')?css('--red'):css('--amber')}"></i></div><b style="text-align:right">${b} / ${a}</b></div>`).join('');})();
+
+/* heatmap */
+(function(){const W=['29J','6J','13J','20J','27J','3A','10A','17A','24A','31A'];
+const G=[['Pushed out',[['Vesper',[11,10,13,11,11,12,6,1,0,0]],['The Undertow',[9,9,9,10,10,9,4,1,0,0]],['Farlight',[9,9,8,9,10,8,4,0,0,0]],['Meteor Mite',[7,9,6,7,9,8,4,1,0,0]]]],
+['Squeezed',[['Corp. Ashgrove',[8,9,7,7,8,8,6,5,5,5]],['Halfmoon',[8,7,8,8,9,8,6,5,5,7]]]],
+['Steady',[['The Drift',[5,5,6,5,5,5,4,5,6,5]],['Sgt. Bulwark',[7,7,8,7,5,7,5,8,7,8]],['The Longcast',[5,5,7,5,5,5,5,6,5,7]],['Cindermark',[7,8,6,7,7,8,6,8,8,9]]]],
+['Picking up the slack',[['Nightwell',[11,10,12,12,11,12,9,14,13,15]],['Ironvale',[6,5,8,6,5,7,5,6,8,9]],['Stormwrack',[10,11,9,12,10,10,8,12,13,15]],['Sgt. Falkirk',[9,8,8,8,7,8,7,9,11,11]],['The Gale',[10,9,10,11,11,10,9,12,14,16]],['Capt. Vantage',[10,10,8,7,9,9,8,11,13,13]]]]];
+const dark=matchMedia('(prefers-color-scheme:dark)').matches;
+const col=r=>r<-.75?['#A32D2D','#fff']:r<-.15?['#F09595','#501313']:r<.15?[css('--neutral'),css('--ink')]:r<.4?['#85B7EB','#042C53']:['#185FA5','#fff'];
+let h='<div></div>'+W.map((w,i)=>`<div class="h">${i===6?'<b>'+w+'</b>':w}</div>`).join('');
+G.forEach(([gn,rs])=>{h+=`<div class="g">${gn} (${rs.length})</div>`;rs.forEach(([n,t])=>{const avg=t.slice(0,6).reduce((a,b)=>a+b,0)/6;h+=`<div class="n">${n}</div>`;t.forEach((v,i)=>{const [bg,fg]=col(v/avg-1);h+=`<div class="c" style="background:${bg};color:${fg};${i===6?'box-shadow:inset 0 0 0 2px '+css('--ink'):''}" title="${n}, week ${W[i]}: ${v} jobs (${Math.round((v/avg-1)*100)}% vs own average)">${v}</div>`})})});
+document.getElementById('hm').innerHTML=h;})();
+
+/* ladder */
+(function(){const pts=[0.5,0.38,0.26,0.14,0.02,0,0,0,0.08,0.08];const L=30,R=450,T=10,B=140,x=i=>L+i*(R-L)/9,y=v=>B-v*(B-T)*1.6;
+let s=`<line x1="${L}" x2="${R}" y1="${B}" y2="${B}" stroke="${css('--line')}"/><text x="${L}" y="${B+16}">start 0.5</text><text x="${R}" y="${B+16}" text-anchor="end">bottom of the scale = 0</text>`;
+s+=`<polyline fill="none" stroke="${css('--red')}" stroke-width="2.5" points="${pts.map((v,i)=>x(i)+','+y(v)).join(' ')}"/>`;
+const lab=['','miss −0.12','miss −0.12','no −0.12','miss −0.12','miss (already 0)','silence','silence','yes +0.08',''];
+pts.forEach((v,i)=>{s+=`<circle cx="${x(i)}" cy="${y(v)}" r="4" fill="${css('--red')}"/>`;if(lab[i])s+=`<text x="${x(i)}" y="${y(v)-8}" text-anchor="middle" font-size="9.5">${lab[i]}</text>`});
+document.getElementById('ladder').innerHTML=s;})();
+
+/* run rows */
+(function(){const r=[['Fair way back','ok','ok','ok','ok'],['Bulk Callout','no','pt','ok','ok'],['Override Audit Log','pt','no','ok','ok'],['Requisition Chains','pt','pt','no','ok'],['Handler Phone App','ok','pt','ok','pt']];
+const m={ok:'✓',pt:'!',no:'✗'};
+document.getElementById('runrows').innerHTML=r.map(([n,...c])=>`<tr><td>${n}</td>${c.map(k=>`<td><span class="${k}" title="${k==='ok'?'Pass':k==='pt'?'Partly':'Missing'}">${m[k]}</span></td>`).join('')}</tr>`).join('');})();
+
+go(Math.max(0,(parseInt(location.hash.slice(1))||1)-1));
+</script>
+</body>
+</html>
